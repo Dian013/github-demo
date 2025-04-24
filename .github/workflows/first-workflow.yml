@@ -7,9 +7,8 @@ jobs:
       - name: Print Hello World
         run: |
           echo "Hello World"
+          sleep 120
           echo "Another line"
       - name: Print a second step
-        run: echo "Another Step"
-      - name: Print a third step
         shell: python
-        run: print("Woaw a python line")
+        run: echo "waw pythoooon"
