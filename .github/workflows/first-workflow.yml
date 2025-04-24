@@ -8,6 +8,6 @@ jobs:
         run: echo "Hello World"
       - name: Print a second step
         run: echo "Another Step"
-      - name: Print a second step
+      - name: Print a third step
         shell: python
         run: print("Woaw a python line")
