@@ -4,6 +4,12 @@ on:
     branches:
       - master
       - 'releases/**'
+
+  pull_request:
+    branches-ignore:
+      - test
+    types:
+      - opened
   workflow_dispatch:
     inputs:
       display-bom:
