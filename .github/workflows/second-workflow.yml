@@ -66,8 +66,25 @@ jobs:
       bom: ${{ steps.publish-bom.outputs.bom_list }}
         
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: npm-dep-${{ hashFiles('**/package-lock.json') }}
+      - name: Get dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build the app
+        run: npm run lint
+
   deploy:
-    needs: build
+    needs: [build, lint]
     runs-on: ubuntu-latest
     steps:
     - name: Pseudo Deployment
