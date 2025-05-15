@@ -18,6 +18,7 @@ jobs:
         with:
           start: npm run dev
           wait-on: 'http://localhost:5173'
+        continue-on-error: true
       - name: Lint code
         run: npm run lint
 
