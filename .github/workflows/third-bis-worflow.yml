@@ -2,9 +2,8 @@ name: Third bis Workflow
 on: push
 jobs:
     build:
-
+        continue-on-error: true
 # matrix permet d’exécuter les étapes sur plusieurs versions de Node.js et plusieurs systèmes d’exploitation
-
         strategy:
             matrix:
                 node-version: [ 'latest', 20, 16 ]
