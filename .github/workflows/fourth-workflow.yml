@@ -4,6 +4,13 @@ on:
     branches:
       - master
       - 'releases/**'
+
+  pull_request:
+    branches-ignore:
+      - test
+    types:
+      - opened
+
   workflow_dispatch:
     inputs:
       display-bom:
@@ -21,8 +28,32 @@ jobs:
         with:
           start: npm run dev
           wait-on: 'http://localhost:5173'
-      - name: Lint code
-        run: npm run lint
+      - name: Seed the database
+        run: >
+          PGPASSWORD=${{ secrets.DB_PASSWORD }} psql -h localhost
+          -U ${{ secrets.DB_USERNAME }}
+          -d gh_db
+          -f ${{ github.workspace }}/indus/data/init_db.sql
+      - name: Start Postgres REST
+        run: >
+          docker run -d --rm --net=host
+          -e PGRST_JWT_SECRET="${{ secrets.PGRST_JWT_SECRET }}"
+          -e PGRST_DB_URI="postgres://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@localhost/gh_db"
+          postgrest/postgrest
+    services:
+      db:
+        image: postgres:17.4-alpine3.21
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: gh_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
 
   build:
@@ -71,6 +102,8 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    container: 
+      image: node:23-alpine3.21
     steps:
       - name: Get code
         uses: actions/checkout@v4
@@ -88,12 +121,14 @@ jobs:
 
   deploy:
     needs: [build, lint]
+    if: github.event_name != 'pull_request'
     uses: ./.github/workflows/deploy.yml
     with:
      artifact-name: my-app
 
   post-deploy:
     needs: deploy
+    if: github.event_name != 'push' && github.ref == 'refs/heades/main'
     runs-on: ubuntu-latest
     steps:
       - name: Print deploy output
