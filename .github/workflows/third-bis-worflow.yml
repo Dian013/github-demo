@@ -1,8 +1,13 @@
-name: Third Workflow
+name: Third bis Workflow
 on: push
 jobs:
     build:
-        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [ 'latest', 20, 16 ]
+                os-version: [ubuntu-latest, windows-latest]
+        runs-on: ${{ matrix.os-version }}
+        
         steps:
             - name: Get code
               uses: actions/checkout@v4
