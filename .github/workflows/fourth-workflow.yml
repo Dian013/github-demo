@@ -40,6 +40,15 @@ jobs:
           -e PGRST_JWT_SECRET="${{ secrets.PGRST_JWT_SECRET }}"
           -e PGRST_DB_URI="postgres://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@localhost/gh_db"
           postgrest/postgrest
+          
+      - name: Cypress run
+        id: cypress-test
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run dev
+          wait-on: 'http://localhost:5173'
+        env:
+          VITE_BACKEND_TOKEN: ${{ secrets.VITE_BACKEND_TOKEN }}
     services:
       db:
         image: postgres:17.4-alpine3.21
