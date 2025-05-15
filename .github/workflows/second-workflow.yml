@@ -52,9 +52,9 @@ jobs:
       id: publish-bom
       run: |
         echo 'bom_list<<EOF' >> $GITHUB_OUTPUT
-        find dist -name '*.js' -exec echo '{}' \; >> $GITHUB_OUTPUT
-        echo EOF >> $GITHUB_OUTPUT
-        
+        find dist -name '*.js' -exec echo '{}' \; >> $GITHUB_OUTPUT 
+        echo EOF >> $GITHUB_OUTPUT                               
+# afficher liste fichier js
     outputs:
       bom: ${{ steps.publish-bom.outputs.bom_list }}
         
