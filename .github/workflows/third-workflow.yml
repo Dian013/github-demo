@@ -6,6 +6,13 @@ jobs:
     outputs:
         bom: ${{ steps.publish-bom.outputs.bom_list }}
     steps:
+
+    - name : Upload artifacts
+      uses : actions/upload-artifact@v4
+      with : 
+        name : my-app
+        path : dist
+        
     - name: Detail content
       id: publish-bom
       run: |
